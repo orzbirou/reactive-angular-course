@@ -26,7 +26,11 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.reloadCourses();
 
+  }
+
+  reloadCourses() {
     const courses$ = this.coursesService.loadedAllCourses()
     .pipe(
       map(courses => courses.sort(sortCoursesBySeqNo))
@@ -43,7 +47,6 @@ export class HomeComponent implements OnInit {
         courses => courses.filter(course => course.category == "ADVANCED")
       )
     );
-
   }
 
 }
