@@ -39,13 +39,15 @@ export class HomeComponent implements OnInit {
       finalize(() => this.loadingService.loadingOff())
     )
 
-    this.beginnerCourses$ = courses$.pipe(
+    const loadCourses$ = this.loadingService.showLoaderUntILCompleted(courses$);
+
+    this.beginnerCourses$ = loadCourses$.pipe(
       map(
         courses => courses.filter(course => course.category == "BEGINNER")
       )
     );
 
-        this.advancedCourses$ = courses$.pipe(
+        this.advancedCourses$ = loadCourses$.pipe(
       map(
         courses => courses.filter(course => course.category == "ADVANCED")
       )
