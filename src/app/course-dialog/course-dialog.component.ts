@@ -1,13 +1,11 @@
-import {AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
+import { AfterViewInit, Component, Inject } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import {Course} from "../model/course";
-import {FormBuilder, Validators, FormGroup} from "@angular/forms";
 import moment from 'moment';
-import {catchError} from 'rxjs/operators';
-import {throwError} from 'rxjs';
-import { CoursesService } from '../services/courses.service';
 import { LoadingService } from '../loading/loading.service';
 import { MessagesService } from '../messages/messages.service';
+import { Course } from "../model/course";
+import { CoursesStore } from '../services/courses.store';
 
 @Component({
     selector: 'course-dialog',
@@ -25,9 +23,7 @@ export class CourseDialogComponent implements AfterViewInit {
     constructor(
         private fb: FormBuilder,
         private dialogRef: MatDialogRef<CourseDialogComponent>,
-        private coursesService: CoursesService,
-        private loadingService: LoadingService,
-        private messagesService: MessagesService,
+        private coursesStore: CoursesStore,
         @Inject(MAT_DIALOG_DATA) course:Course) {
 
         this.course = course;
@@ -49,21 +45,10 @@ export class CourseDialogComponent implements AfterViewInit {
 
       const changes = this.form.value;
 
-      const saveCourse$ = this.coursesService.saveCourse(this.course.id, changes)
-      .pipe(
-        catchError(err => {
-            const message = 'Failed to save course';
-            console.log(err);
-            this.messagesService.showErrors(message);
-            return throwError(err);
-        })
-      );
-      this.loadingService.showLoaderUntILCompleted(saveCourse$)
-      .subscribe(
-        (val) => {
-            this.dialogRef.close(val);
-        }
-      );
+      this.coursesStore.saveCourse(this.course.id, changes)  
+      .subscribe();
+
+      this.dialogRef.close(changes)
     }
 
     close() {
